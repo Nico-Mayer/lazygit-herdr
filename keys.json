@@ -1,0 +1,8 @@
+{
+  "global": {
+    "ctrl-shift-g": "mod.open:lazygit"
+  },
+  "terminal": {
+    "ctrl-shift-g": "mod.open:lazygit"
+  }
+}
