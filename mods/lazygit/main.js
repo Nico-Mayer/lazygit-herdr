@@ -63,7 +63,7 @@ function readHidden() {
 }
 
 function writeHidden(hiddenAt) {
-  setShared(STATE_KEY, { hiddenAt });
+  if (JSON.stringify(hiddenAt) !== JSON.stringify(readHidden())) setShared(STATE_KEY, { hiddenAt });
 }
 
 function markHidden(address) {
@@ -173,15 +173,12 @@ function dialogSpec(address) {
 function hide(dialog) {
   memory().dialog = null;
   closeOverlay(dialog.overlay);
-  markHidden(dialog.terminal);
   if (dialog.previousPane) run("pane.focus", { pane: dialog.previousPane });
 }
 
 function show(target, address) {
   const overlay = openOverlay(dialogSpec(address));
   memory().dialog = { overlay, terminal: address, previousPane: target.previousPane };
-  const { [address]: _shown, ...rest } = readHidden();
-  writeHidden(rest);
 }
 
 async function toggle() {
