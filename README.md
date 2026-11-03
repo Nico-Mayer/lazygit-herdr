@@ -1,6 +1,6 @@
 # lazygit for Herdr
 
-A [Herdr](https://herdr.dev) mod that opens [lazygit](https://github.com/jesseduffield/lazygit) in a floating dialog for the repo you are working in. Press `ctrl-shift-g` to show it, press again to hide it. lazygit stays open in the background, so you come back to where you left off.
+A [Herdr](https://herdr.dev) mod that opens [lazygit](https://github.com/jesseduffield/lazygit) in a floating dialog for the repo you are working in. Press your shortcut to show it, press again to hide it. lazygit stays open in the background, so you come back to where you left off.
 
 ![lazygit in a floating dialog over Herdr](preview.png)
 
@@ -29,7 +29,7 @@ git clone https://github.com/Nico-Mayer/lazygit-herdr.git
 New-Item -ItemType Junction -Path "$HOME\.config\herdr-app\mods\lazygit" -Target "$PWD\lazygit-herdr\mods\lazygit"
 ```
 
-Then merge [`keys.json`](keys.json) into `~/.config/herdr-app/keys.json`:
+Then add a shortcut. Merge [`keys.json`](keys.json) into `~/.config/herdr-app/keys.json` and change the key to the one you want:
 
 ```json
 {
@@ -38,7 +38,7 @@ Then merge [`keys.json`](keys.json) into `~/.config/herdr-app/keys.json`:
 }
 ```
 
-Keep both entries, so the key also hides lazygit while it has focus. To use another key, change it in both. Avoid keys lazygit uses, and `ctrl-alt-*` on Windows (it acts as AltGr).
+Use the same key in both entries, so it also hides lazygit while lazygit has focus. Avoid keys lazygit uses, and `ctrl-alt-*` on Windows (it acts as AltGr).
 
 ## Settings
 
@@ -56,7 +56,7 @@ Optional. Without settings, the mod finds `lazygit` on each machine's `PATH`. To
 - `path`: lazygit on this computer.
 - `machines`: lazygit per remote machine, by its name in `hc machine ls`.
 
-Changes apply on the next press. A fixed path helps when lazygit on `PATH` is a slow shim, for example from mise.
+Changes apply the next time you open lazygit. A fixed path helps when lazygit on `PATH` is a slow shim, for example from mise.
 
 ## What it runs
 
