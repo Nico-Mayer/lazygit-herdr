@@ -14,6 +14,12 @@ herdr-app mod: lazygit in a floating dialog. Code in `mods/lazygit/`, pure logic
 - `npm test` - unit tests.
 - `npm run check` - `herdr-app check mods/lazygit`.
 - `herdr-app status`, `herdr-app shot <file>`, `hc ls --json --label herdr.mod=lazygit` - inspect a live run.
+- `mise run release` - bump, tag, push, GitHub release. See Release.
+
+## Release
+
+1. Update README.md and RECIPE.md for the changes since the last tag. Commit them.
+2. `mise run release` on a clean `main`. It picks the version from conventional commits and shows the notes first. Agents pass `--yes`.
 
 ## Gotchas
 
