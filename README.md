@@ -1,41 +1,54 @@
-# lazygit-herdr
+# lazygit for Herdr
 
-A [herdr-app](https://github.com/herdrdev/herdr-app) mod that opens [lazygit](https://github.com/jesseduffield/lazygit) in a floating dialog for the git repo of the active pane. Press the shortcut again to hide it. lazygit keeps running, so the next press shows it as you left it.
+A [Herdr](https://herdr.dev) desktop app mod that opens [lazygit](https://github.com/jesseduffield/lazygit) in a floating dialog, for the git repo of the terminal you are in. Press `ctrl-shift-g` to show it, press again to hide it. lazygit keeps running, so it comes back as you left it.
 
-- Works on this computer and in remote spaces (`hc machine`), when the remote machine has git and lazygit.
-- One lazygit per repo per space.
-- Shows a notification instead of opening when the folder is unknown, lazygit is missing, or the folder is not a git repo.
+![lazygit in a floating dialog over Herdr](preview.png)
 
-## Requirements
-
-- herdr-app 0.1.12 or newer, with herdr-core (`hc`).
-- `git` and `lazygit` on each machine you use it on.
+- **Follows your focus.** Opens lazygit in the repo root of the focused terminal, even from a subfolder.
+- **One lazygit per repo per space.** Hiding and showing reuses the same lazygit.
+- **Remote machines too.** Works in spaces on another Linux or macOS machine (`hc machine`), when that machine has `git` and `lazygit`.
+- **Stays out of the way.** `Esc` goes to lazygit, not Herdr. Click outside the dialog to hide it. `q` in lazygit quits it and closes the dialog.
+- **Cleans up after itself.** Ends lazygits whose space was closed, and those hidden for 30 minutes or more.
+- **Clear errors.** Shows a notification when the folder is unknown, is not a git repo, or lazygit is missing.
 
 ## Install
 
-1. Copy `mods/lazygit/` to `~/.config/herdr-app/mods/lazygit/`.
-2. Merge the entries from `keys.json` into `~/.config/herdr-app/keys.json`:
+You need Herdr app 0.1.12 or newer, and `git` and `lazygit` on each machine you use it on.
 
-   ```json
-   {
-     "global": { "ctrl-shift-g": "mod.open:lazygit" },
-     "terminal": { "ctrl-shift-g": "mod.open:lazygit" }
-   }
-   ```
+Clone this repository and link the mod into Herdr's home, so a `git pull` updates it:
 
-   Keep both sections. The `terminal` entry lets the shortcut hide lazygit while lazygit has focus.
+```sh
+git clone https://github.com/Nico-Mayer/lazygit-herdr.git
+ln -s "$PWD/lazygit-herdr/mods/lazygit" ~/.config/herdr-app/mods/lazygit
+```
 
-To use another shortcut, change the key in both sections. Avoid `ctrl-alt-*` on Windows (it acts as AltGr) and keys that lazygit uses.
+On Windows (PowerShell):
 
-## Settings
+```powershell
+git clone https://github.com/Nico-Mayer/lazygit-herdr.git
+New-Item -ItemType Junction -Path "$HOME\.config\herdr-app\mods\lazygit" -Target "$PWD\lazygit-herdr\mods\lazygit"
+```
 
-Optional: `~/.config/herdr-app/lazygit.json`. Without it, the mod finds `lazygit` on each machine's PATH.
+Then merge [`keys.json`](keys.json) into `~/.config/herdr-app/keys.json`:
 
 ```json
 {
-  "path": "C:/Users/me/AppData/Local/mise/installs/lazygit/0.66.2/lazygit.exe",
+  "global": { "ctrl-shift-g": "mod.open:lazygit" },
+  "terminal": { "ctrl-shift-g": "mod.open:lazygit" }
+}
+```
+
+Keep both sections. The `terminal` entry lets the key hide lazygit while lazygit has focus. To use another key, change it in both. Avoid keys lazygit uses, and `ctrl-alt-*` on Windows (it acts as AltGr).
+
+## Settings
+
+Optional. Without settings, the mod finds `lazygit` on each machine's `PATH`. To point it at a specific binary, create `~/.config/herdr-app/lazygit.json`:
+
+```json
+{
+  "path": "/usr/local/bin/lazygit",
   "machines": {
-    "macbook": "/opt/homebrew/bin/lazygit"
+    "my-server": "/home/me/.local/bin/lazygit"
   }
 }
 ```
@@ -43,16 +56,13 @@ Optional: `~/.config/herdr-app/lazygit.json`. Without it, the mod finds `lazygit
 - `path`: lazygit on this computer.
 - `machines`: lazygit per remote machine, by its name in `hc machine ls`.
 
-The file is read on each press. Changes apply on the next press.
+The file is read on each press. This helps when lazygit is on `PATH` only as a shim (for example from mise), which can slow down each start.
 
-Setting the real executable helps when lazygit is on PATH only as a shim (for example from mise). On Windows, a mise shim adds about 2 seconds to each start.
+## What it runs
 
-## Behavior
+On the machine of the focused space, the mod runs `git rev-parse` to find the repo root, and `where.exe` or `command -v` to find lazygit. It starts lazygit as a labeled herdr-core terminal (`hc run`), lists its own terminals (`hc ls`) and ends them during cleanup (`hc kill`). It reads `lazygit.json` from Herdr's home. The mod itself makes no network requests.
 
-- **Hide:** press the shortcut, or click outside the dialog. lazygit keeps running.
-- **Esc** goes to lazygit, not to herdr.
-- **Quit:** `q` in lazygit ends it and closes the dialog.
-- **Cleanup on each press:** the mod ends its lazygits whose space was closed, and those hidden for 30 minutes or more. It skips machines that are offline or still loading. Cleanup only runs when you press the shortcut, so a hidden lazygit can live longer until your next press.
+Cleanup only runs when you press the key, and skips machines that are offline or still loading.
 
 ## Development
 
@@ -61,10 +71,8 @@ npm test        # unit tests for mods/lazygit/model.js
 npm run check   # herdr-app check mods/lazygit
 ```
 
-For live development, link the folder instead of copying it. On Windows:
+With the mod linked as above, saving a file reloads it.
 
-```powershell
-New-Item -ItemType Junction -Path "$HOME\.config\herdr-app\mods\lazygit" -Target "$PWD\mods\lazygit"
-```
+## License
 
-Saving a file reloads the mod.
+[MIT](LICENSE). [RECIPE.md](RECIPE.md) is the brief to build it from scratch.
