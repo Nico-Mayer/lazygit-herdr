@@ -1,15 +1,15 @@
 # lazygit for Herdr
 
-A [Herdr](https://herdr.dev) desktop app mod that opens [lazygit](https://github.com/jesseduffield/lazygit) in a floating dialog, for the git repo of the terminal you are in. Press `ctrl-shift-g` to show it, press again to hide it. lazygit keeps running, so it comes back as you left it.
+A [Herdr](https://herdr.dev) mod that opens [lazygit](https://github.com/jesseduffield/lazygit) in a floating dialog for the repo you are working in. Press `ctrl-shift-g` to show it, press again to hide it. lazygit stays open in the background, so you come back to where you left off.
 
 ![lazygit in a floating dialog over Herdr](preview.png)
 
-- **Follows your focus.** Opens lazygit in the repo root of the focused terminal, even from a subfolder.
-- **One lazygit per repo per space.** Hiding and showing reuses the same lazygit.
-- **Remote machines too.** Works in spaces on another Linux or macOS machine (`hc machine`), when that machine has `git` and `lazygit`.
-- **Stays out of the way.** `Esc` goes to lazygit, not Herdr. Click outside the dialog to hide it. `q` in lazygit quits it and closes the dialog.
-- **Cleans up after itself.** Ends lazygits whose space was closed, and those hidden for 30 minutes or more.
-- **Clear errors.** Shows a notification when the folder is unknown, is not a git repo, or lazygit is missing.
+- **Follows your focus.** Opens the repo of the terminal you are in, even from a subfolder.
+- **Keeps your place.** One lazygit per repo per space. Hide and show it as often as you like.
+- **Works on remote machines.** Also in spaces on another Linux or macOS machine, if it has `git` and `lazygit`.
+- **Stays out of the way.** `Esc` goes to lazygit. Click outside to hide it. `q` closes it.
+- **Cleans up.** Closes lazygit when its space is closed, or after 30 minutes hidden.
+- **Clear errors.** Tells you when the folder is not a git repo or lazygit is missing.
 
 ## Install
 
@@ -38,7 +38,7 @@ Then merge [`keys.json`](keys.json) into `~/.config/herdr-app/keys.json`:
 }
 ```
 
-Keep both sections. The `terminal` entry lets the key hide lazygit while lazygit has focus. To use another key, change it in both. Avoid keys lazygit uses, and `ctrl-alt-*` on Windows (it acts as AltGr).
+Keep both entries, so the key also hides lazygit while it has focus. To use another key, change it in both. Avoid keys lazygit uses, and `ctrl-alt-*` on Windows (it acts as AltGr).
 
 ## Settings
 
@@ -56,13 +56,11 @@ Optional. Without settings, the mod finds `lazygit` on each machine's `PATH`. To
 - `path`: lazygit on this computer.
 - `machines`: lazygit per remote machine, by its name in `hc machine ls`.
 
-The file is read on each press. This helps when lazygit is on `PATH` only as a shim (for example from mise), which can slow down each start.
+Changes apply on the next press. A fixed path helps when lazygit on `PATH` is a slow shim, for example from mise.
 
 ## What it runs
 
-On the machine of the focused space, the mod runs `git rev-parse` to find the repo root, and `where.exe` or `command -v` to find lazygit (once per machine, then remembered until Herdr restarts or a start fails). It starts lazygit as a labeled herdr-core terminal (`hc run`), lists its own terminals (`hc ls`) and ends them during cleanup (`hc kill`). It reads `lazygit.json` from Herdr's home. The mod itself makes no network requests.
-
-Cleanup only runs when you press the key, after the dialog shows, and skips machines that are offline or still loading.
+The mod runs `git` and `lazygit` on the machine of the focused space, and uses `hc` to start and close its own terminals. It reads only `lazygit.json`, and makes no network requests.
 
 ## Development
 
