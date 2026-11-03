@@ -36,12 +36,12 @@ Press `ctrl-shift-g` and lazygit opens in a large floating dialog over the Herdr
 - `mods/lazygit/mod.json`: `{"place":"none","title":"lazygit","overlay":{"kind":"window","frame":"none","width":1,"height":1}}`.
 - `keys.json`: `ctrl-shift-g` -> `mod.open:lazygit` in both `global` and `terminal` sections.
 - **Runner copy.** `mod.open` opens a 1x1 invisible copy. Its `init` spawns one toggle, then `closeOverlay(props().overlay)`. It renders an empty `div()`.
-- **Process state** on `globalThis.__lazygit_float_v1`: the shown dialog `{overlay, terminal, previousPane}` and a lease `{owner, at}`. Each runner waits for the lease (expires after 15 s), so a fast double press runs two toggles in order. The runner also releases the lease in `close()`.
-- **Durable state** in `shared("lazygit.v1")`: `{ hiddenAt: { <terminal address>: <ms> } }`.
+- **Process state** on `globalThis.__lazygit_float_v1`: the shown dialog `{overlay, terminal, previousPane}`, a lease `{owner, at}`, and `paths` (found lazygit path per machine). Each runner waits for the lease (expires after 15 s), so a fast double press runs two toggles in order. The runner also releases the lease in `close()`.
+- **Durable state** in `shared("lazygit.v1")`: `{ hiddenAt: { <terminal address>: <ms> } }`. Written only when it changes: `setShared` saves to disk and re-renders every mod.
 - **Dialog:** `openOverlay({kind:"dialog", width:0.9, height:0.9, layout:{type:"column", children:[{type:"block", size:{px:0}, content:{mod:"lazygit", props:{role:"sentinel", terminal}}}, {type:"block", content:{terminal}}]}})`. The 0px sentinel copy's `close()` runs however the dialog goes: it clears the shown-dialog record and sets `hiddenAt`.
-- **Hide:** `closeOverlay`, set `hiddenAt`, `run("pane.focus", {pane: previousPane})`, then cleanup.
-- **Open:** in parallel, list instances and locate the target. Locate uses `focused()`, `spaces()` (the space's `machine`, null for this computer), `readTextFile(appHome() + "/lazygit.json")` and `exec("git", ["-C", cwd, "rev-parse", "--show-toplevel"], {on: machine})`. Then cleanup, then reuse or start.
-- **Find lazygit** only when starting: the configured path, else `where.exe lazygit` on local Windows, else `sh -c "command -v lazygit"`. First non-empty line.
+- **Hide:** `closeOverlay` (the sentinel sets `hiddenAt`), `run("pane.focus", {pane: previousPane})`, then cleanup.
+- **Open:** in parallel, list instances and locate the target. Locate uses `focused()`, `spaces()` (the space's `machine`, null for this computer), `readTextFile(appHome() + "/lazygit.json")` and `exec("git", ["-C", cwd, "rev-parse", "--show-toplevel"], {on: machine})`. Then reuse or start, show, and only then cleanup, so slow remote kills do not delay the dialog. If locate fails, cleanup runs before the notification.
+- **Find lazygit** only when starting: the configured path, else `where.exe lazygit` on local Windows, else `sh -c "command -v lazygit"`. First non-empty line. The found path is cached per machine, and dropped when a start with it fails.
 - **Start:** `hc run --json --bg --rm --no-parent [--on <machine>] --cwd <root> --label herdr.mod=lazygit --label lazygit.repo=<root key> --label lazygit.space=<space id> -- <lazygit>`. Returns the address (`tN`, or `machine/tN` for remote).
 - **List:** `hc ls --json --label herdr.mod=lazygit`, then `hc get --json <address>` for each to read labels and state.
 - **Repo key:** backslashes to `/`, trailing slash removed, lowercased only for local Windows.
