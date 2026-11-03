@@ -48,3 +48,42 @@ postinstall = [
   "mise run skills:sync",
   "hk install",
 ]
+
+[tasks.release]
+description = "Bump version, tag, push and publish a GitHub release"
+shell = "bash -c"
+usage = 'flag "-y --yes" help="Skip the confirmation prompt"'
+run = '''
+set -euo pipefail
+if [ -n "$(git status --porcelain)" ]; then
+  echo "release: dirty tree, commit or stash first" >&2
+  exit 1
+fi
+if [ "$(git branch --show-current)" != main ]; then
+  echo "release: not on main" >&2
+  exit 1
+fi
+git fetch -q
+if [ "$(git rev-parse @)" != "$(git rev-parse @{u})" ]; then
+  echo "release: main not in sync with origin" >&2
+  exit 1
+fi
+gh auth status >/dev/null
+v=$(git cliff --bumped-version 2>/dev/null)
+if [ "$v" = "$(git describe --tags --abbrev=0 2>/dev/null)" ]; then
+  echo "release: nothing to release since $v"
+  exit 0
+fi
+notes=$(git cliff --unreleased --tag "$v" --strip all 2>/dev/null | sed '1{/^## /d}' | sed '/./,$!d')
+printf '%s\n\n%s\n\n' "$v" "$notes"
+if [ "${usage_yes:-false}" != "true" ]; then
+  read -r -p "README and RECIPE updated? Release $v? [y/N] " answer
+  if [ "$answer" != "y" ]; then
+    echo "release: cancelled" >&2
+    exit 1
+  fi
+fi
+npm version "${v#v}" -m "chore: release v%s"
+git push --follow-tags
+echo "$notes" | gh release create "$v" --title "$v" --notes-file - --verify-tag
+'''
