@@ -26,3 +26,6 @@ tmp/
 .DS_Store
 Thumbs.db
 desktop.ini
+
+# herdr mod typings, generated
+gpui-kit.d.ts

@@ -2,6 +2,8 @@
 "aqua:runkids/skillshare" = "latest"
 hk = { version = "latest", workflow = "release.yml" }
 "npm:@fission-ai/openspec" = "latest"
+node = "latest"
+lazygit = "latest"
 
 [settings]
 skills.dir = ".agents/skills"
