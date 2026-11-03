@@ -105,6 +105,9 @@ async function readSettings() {
 }
 
 async function findLazygit(machine, localWindows) {
+  const paths = memory().paths ??= {};
+  const cached = paths[machine ?? ""];
+  if (cached) return { path: cached, configured: false };
   const missing = new Problem("error", "lazygit not installed",
     `lazygit was not found on ${where(machine)}. Install it, or set its path in lazygit.json.`);
   const result = localWindows
@@ -112,6 +115,7 @@ async function findLazygit(machine, localWindows) {
     : await execOn(machine, "sh", ["-c", "command -v lazygit"], missing);
   const path = result.code === 0 ? firstLine(result.stdout) : null;
   if (!path) throw missing;
+  paths[machine ?? ""] = path;
   return { path, configured: false };
 }
 
@@ -154,6 +158,7 @@ async function start(target) {
     throw new Problem("error", "lazygit did not start",
       `${target.lazygit.path} (set in lazygit.json) could not start: ${coreError(result)}`);
   }
+  delete memory().paths?.[target.machine ?? ""];
   throw new Error(`Start lazygit: ${coreError(result)}`);
 }
 
