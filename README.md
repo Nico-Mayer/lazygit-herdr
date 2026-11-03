@@ -29,7 +29,7 @@ git clone https://github.com/Nico-Mayer/lazygit-herdr.git
 New-Item -ItemType Junction -Path "$HOME\.config\herdr-app\mods\lazygit" -Target "$PWD\lazygit-herdr\mods\lazygit"
 ```
 
-Then add a shortcut. Merge [`keys.json`](keys.json) into `~/.config/herdr-app/keys.json` and change the key to the one you want:
+Then merge [`keys.json`](keys.json) into `~/.config/herdr-app/keys.json`:
 
 ```json
 {
@@ -38,7 +38,7 @@ Then add a shortcut. Merge [`keys.json`](keys.json) into `~/.config/herdr-app/ke
 }
 ```
 
-Use the same key in both entries, so it also hides lazygit while lazygit has focus. Avoid keys lazygit uses, and `ctrl-alt-*` on Windows (it acts as AltGr).
+Keep both entries, so the key also hides lazygit while it has focus. To use another key, change it in both. Avoid keys lazygit uses, and `ctrl-alt-*` on Windows (it acts as AltGr).
 
 ## Settings
 
