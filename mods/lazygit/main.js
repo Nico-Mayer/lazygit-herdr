@@ -193,11 +193,14 @@ async function toggle() {
     locate().then(target => ({ target }), problem => ({ problem })),
   ]);
   const { target, problem } = located;
-  const existing = target ? findInstance(terminals, target.root.key, target.space) : null;
-  await cleanup(terminals, existing?.address ?? null);
-  if (problem) throw problem;
+  if (problem) {
+    await cleanup(terminals, null);
+    throw problem;
+  }
+  const existing = findInstance(terminals, target.root.key, target.space);
   const address = existing?.address ?? await start({ ...target, lazygit: await chooseLazygit(target) });
   show(target, address);
+  await cleanup(terminals, address);
 }
 
 async function runToggle(owner, cx) {
