@@ -1,6 +1,6 @@
 {
   "name": "lazygit-herdr",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Herdr mod: lazygit in a floating window for the active pane's repo",
   "license": "MIT",
   "private": true,
