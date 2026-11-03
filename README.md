@@ -60,9 +60,9 @@ The file is read on each press. This helps when lazygit is on `PATH` only as a s
 
 ## What it runs
 
-On the machine of the focused space, the mod runs `git rev-parse` to find the repo root, and `where.exe` or `command -v` to find lazygit. It starts lazygit as a labeled herdr-core terminal (`hc run`), lists its own terminals (`hc ls`) and ends them during cleanup (`hc kill`). It reads `lazygit.json` from Herdr's home. The mod itself makes no network requests.
+On the machine of the focused space, the mod runs `git rev-parse` to find the repo root, and `where.exe` or `command -v` to find lazygit (once per machine, then remembered until Herdr restarts or a start fails). It starts lazygit as a labeled herdr-core terminal (`hc run`), lists its own terminals (`hc ls`) and ends them during cleanup (`hc kill`). It reads `lazygit.json` from Herdr's home. The mod itself makes no network requests.
 
-Cleanup only runs when you press the key, and skips machines that are offline or still loading.
+Cleanup only runs when you press the key, after the dialog shows, and skips machines that are offline or still loading.
 
 ## Development
 
