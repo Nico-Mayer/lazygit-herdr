@@ -4,6 +4,8 @@ hk = { version = "latest", workflow = "release.yml" }
 "npm:@fission-ai/openspec" = "latest"
 node = "latest"
 lazygit = "latest"
+git-cliff = "2.14.2"
+gh = "2.103.3"
 
 [settings]
 skills.dir = ".agents/skills"
